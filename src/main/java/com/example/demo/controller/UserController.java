@@ -105,10 +105,15 @@ public class UserController {
 	 * PUT /users/{id}
 	 * **/
 	@PutMapping("/{id}")
-	public ResponseEntity<CustomResponse<UserEntityResponse>> updateUser(@PathVariable Integer id)
+	public ResponseEntity<CustomResponse<UserEntityResponse>> updateUser(@PathVariable Integer id, 
+			@RequestBody UserEntityRequest request)
 	{
+		CustomResponse<UserEntityResponse> userResponse = new CustomResponse<>();
+		UserEntityResponse user = userService.updateUser(id, request);
+		userResponse.setResponseBody(user);
+		userResponse.setCustomResponseCode(CustomResponseCode.USER_UPDATED);
 		
-		return null;
+		return new ResponseEntity<CustomResponse<UserEntityResponse>>(userResponse, (HttpStatus.OK));
 	}
 	
 	

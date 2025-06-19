@@ -82,6 +82,10 @@ public class UserService {
 		return userResponse;
 	}
 
+	/**
+	 * GET /users?optionalParam
+	 * Selects a user based on given param
+	 * **/
 	public List<UserEntityResponse> findUserByParam(String username, String email,
 			String phoneNumber, Boolean isDeleted) {
 		
@@ -99,6 +103,30 @@ public class UserService {
 		});
 		
 		return listResponse;
+	}
+	
+	
+	
+	/**
+	 * PUT /users/{id}
+	 * Update a user based on the id
+	 * **/
+	public UserEntityResponse updateUser(Integer id, UserEntityRequest request) {
+		
+		UserEntity existingUser = userRepository.findById(id).orElseThrow(() -> new AppException(CustomResponseCode.ERR_USER_UPDATED));
+		existingUser.setUsername(request.getUsername());
+		existingUser.setPassword(request.getPassword());
+		existingUser.setEmail(request.getEmail());
+		existingUser.setPhoneNumber(request.getPhoneNumber());
+		existingUser.setIsDeleted(request.getIsDeleted());
+		
+		UserEntity updatedUser = userRepository.save(existingUser);
+		UserEntityResponse response = new UserEntityResponse();
+		
+		
+		BeanUtils.copyProperties(updatedUser, response);
+		
+		return response;
 	}
 	
 }
