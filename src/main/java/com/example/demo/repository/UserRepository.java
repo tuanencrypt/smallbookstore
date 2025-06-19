@@ -19,7 +19,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 	@Query("SELECT u FROM UserEntity u WHERE (:username IS NULL OR u.username = :username)"
 			+ "AND (:email IS NULL OR u.email = :email)"
 			+ "AND (:phoneNumber IS NULL or u.phoneNumber = :phoneNumber)"
-			+ "AND (:isDeleted IS NULL or u.isDeleted = :isDeleted)")
+			+ "AND (u.isDeleted = :isDeleted)")
 	Optional<List<UserEntity>> findUserByParam(
 			@Param("username") String username,
 			@Param("email") String email,
