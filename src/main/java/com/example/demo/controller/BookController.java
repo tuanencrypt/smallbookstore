@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -92,6 +93,32 @@ public class BookController {
 		CustomResponse<BookEntityResponse> response = new CustomResponse<>();
 		BookEntityResponse bookResponse = bookService.updateBook(id, request);
 		response.setCustomResponseCode(CustomResponseCode.BOOK_UPDATED);
+		response.setResponseBody(bookResponse);
+		
+		return new ResponseEntity<CustomResponse<BookEntityResponse>>(response, HttpStatus.OK);
+	}
+	
+	/**
+	 * DELETE /books/{id}
+	 * **/
+	@DeleteMapping("/{id}")
+	public ResponseEntity<CustomResponse<BookEntityResponse>> deleteBook(@PathVariable Integer id) {
+		CustomResponse<BookEntityResponse> response = new CustomResponse<>();
+		BookEntityResponse bookResponse = bookService.deleteBook(id);
+		response.setCustomResponseCode(CustomResponseCode.BOOK_DELETED);
+		response.setResponseBody(bookResponse);
+		
+		return new ResponseEntity<CustomResponse<BookEntityResponse>>(response, HttpStatus.OK);
+	}
+	
+	/**
+	 * DELETE /books/delete/{id}
+	 * **/
+	@DeleteMapping("/delete/{id}")
+	public ResponseEntity<CustomResponse<BookEntityResponse>> safeDeleteBook(@PathVariable Integer id) {
+		CustomResponse<BookEntityResponse> response = new CustomResponse<>();
+		BookEntityResponse bookResponse = bookService.safeDeleteBook(id);
+		response.setCustomResponseCode(CustomResponseCode.BOOK_DELETED);
 		response.setResponseBody(bookResponse);
 		
 		return new ResponseEntity<CustomResponse<BookEntityResponse>>(response, HttpStatus.OK);

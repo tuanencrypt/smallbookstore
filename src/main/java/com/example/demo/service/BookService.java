@@ -80,7 +80,6 @@ public class BookService {
 	/**
 	 * PUT /books/{id}
 	 * Updates a book based on the id
-	 * @param request 
 	 * **/
 	public BookEntityResponse updateBook(Integer id, BookEntityRequest request) {
 		BookEntity existingBook = bookRepository.findById(id).orElseThrow(() -> new AppException(CustomResponseCode.ERR_BOOK_UPDATED));
@@ -97,5 +96,35 @@ public class BookService {
 		BeanUtils.copyProperties(existingBook, response);
 		
 		return response;
+	}
+
+	/**
+	 * DELETE /books/{id}
+	 * Deletes a book based on the id
+	 * **/
+	public BookEntityResponse deleteBook(Integer id) {
+		BookEntity existingBook = bookRepository.findById(id).orElseThrow(() -> new AppException(CustomResponseCode.ERR_BOOK_DELETED));
+		
+		BookEntityResponse bookResponse = new BookEntityResponse();
+		BeanUtils.copyProperties(existingBook, bookResponse);
+		bookRepository.delete(existingBook);
+		
+		return bookResponse;
+	}
+
+	/**
+	 * DELETE /books/delete/{id}
+	 * Safely deletes a book based on the id
+	 * This option only set <em>isDeleted</em> from <strong>BookEntity</strong> to true.
+	 * **/
+	public BookEntityResponse safeDeleteBook(Integer id) {
+		BookEntity existingBook = bookRepository.findById(id).orElseThrow(() -> new AppException(CustomResponseCode.ERR_BOOK_DELETED));
+		existingBook.setIsDeleted(true);
+		
+		BookEntityResponse bookResponse = new BookEntityResponse();
+		BeanUtils.copyProperties(existingBook, bookResponse);
+		bookRepository.save(existingBook);
+		
+		return bookResponse;
 	}
 }
