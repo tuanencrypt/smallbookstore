@@ -52,6 +52,11 @@ public class BookService {
 		return bookResponse;
 	}
 
+	/**
+	 * GET /books
+	 * GET /books?optionalParam
+	 * Selects a list of books based on param or select all books
+	 * **/
 	public List<BookEntityResponse> findBooksByParam(String bookName, String author, String publisher, String isbn13,
 			String isbn10, Integer numOfPage, Double price, Boolean isDeleted) {
 		Optional<List<BookEntity>> listBooks = bookRepository
@@ -70,5 +75,27 @@ public class BookService {
 		});
 		
 		return bookListResponse;
+	}
+
+	/**
+	 * PUT /books/{id}
+	 * Updates a book based on the id
+	 * @param request 
+	 * **/
+	public BookEntityResponse updateBook(Integer id, BookEntityRequest request) {
+		BookEntity existingBook = bookRepository.findById(id).orElseThrow(() -> new AppException(CustomResponseCode.ERR_BOOK_UPDATED));
+		existingBook.setAuthor(request.getAuthor());
+		existingBook.setBookName(request.getBookName());
+		existingBook.setIsbn13(request.getIsbn13());
+		existingBook.setIsbn10(request.getIsbn10());
+		existingBook.setNumOfPage(request.getNumOfPage());
+		existingBook.setPrice(request.getPrice());
+		existingBook.setPublisher(request.getPublisher());
+		
+		bookRepository.save(existingBook);
+		BookEntityResponse response = new BookEntityResponse();
+		BeanUtils.copyProperties(existingBook, response);
+		
+		return response;
 	}
 }
