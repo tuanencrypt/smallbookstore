@@ -25,24 +25,6 @@ public class UserService {
 	public UserService(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
-
-	/**
-	 * GET /users
-	 * Selects all the users
-	 * **/
-	public List<UserEntityResponse> getUsers() {
-		List<UserEntity> listUsers = userRepository.findAll();
-		List<UserEntityResponse> listUsersResponse = new ArrayList<>();
-		
-		for(UserEntity src : listUsers) {
-			UserEntityResponse edst = new UserEntityResponse();
-			BeanUtils.copyProperties(src, edst);
-			listUsersResponse.add(edst);
-		}
-		
-		return listUsersResponse;
-	}
-	
 	
 	/**
 	 * POST /users
@@ -125,6 +107,37 @@ public class UserService {
 		
 		
 		BeanUtils.copyProperties(updatedUser, response);
+		
+		return response;
+	}
+
+	
+	/**
+	 * DELETE /users/{id}
+	 * Delete a user based on the id
+	 * **/
+	public UserEntityResponse deleteUser(Integer id) {
+		UserEntity existingUser = userRepository.findById(id).orElseThrow(() -> new AppException(CustomResponseCode.ERR_USER_DELETED));
+		
+		UserEntityResponse response = new UserEntityResponse();
+		BeanUtils.copyProperties(existingUser, response);
+		userRepository.deleteById(id);
+		
+		return response;
+	}
+
+	/**
+	 * DELETE /users/delete/{id}
+	 * Safe delete a user based on the id
+	 * This is just to update the <em>isDeleted</em> on <strong>UserEntity</strong> to true
+	 * **/
+	public UserEntityResponse safeDeleteUser(Integer id) {
+		UserEntity existingUser = userRepository.findById(id).orElseThrow(() -> new AppException(CustomResponseCode.ERR_USER_DELETED));
+		existingUser.setIsDeleted(true);
+		userRepository.save(existingUser);
+		
+		UserEntityResponse response = new UserEntityResponse();
+		BeanUtils.copyProperties(existingUser, response);
 		
 		return response;
 	}

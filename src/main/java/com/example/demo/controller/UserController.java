@@ -6,7 +6,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -34,7 +36,6 @@ public class UserController {
 
 	/**
 	 * POST /users
-	 * Creates a new user
 	 * **/
 	@PostMapping
 	public ResponseEntity<CustomResponse<UserEntityResponse>> addUser(@RequestBody UserEntityRequest request) {
@@ -46,33 +47,18 @@ public class UserController {
 		return new ResponseEntity<CustomResponse<UserEntityResponse>>(userResponse, HttpStatus.OK);
 	}
 	
-	/**
-	 * GET /users
-	 * Selects all the users
-	 * **/
-//	@GetMapping
-//	public ResponseEntity<CustomResponse<List<UserEntityResponse>>> getUsers() {
-//		CustomResponse<List<UserEntityResponse>> listUserResponse = new CustomResponse<>();
-//		List<UserEntityResponse> listUser = userService.getUsers();
-//		listUserResponse.setCustomResponseCode(CustomResponseCode.USER_SELECTED);
-//		listUserResponse.setResponseBody(listUser);
-//		
-//		return new ResponseEntity<CustomResponse<List<UserEntityResponse>>>(listUserResponse, HttpStatus.OK);
-//	}
-//	
 	
 	/**
 	 * GET /users/{id}
-	 * Select a user based on its id
 	 * **/
 	@GetMapping("/{id}")
 	public ResponseEntity<CustomResponse<UserEntityResponse>> getUser(@PathVariable Integer id)
 	{
 		UserEntityResponse user = userService.findUser(id);
-		CustomResponse<UserEntityResponse> userResponse = new CustomResponse<>(CustomResponseCode.USER_SELECTED);
-		userResponse.setResponseBody(user);
+		CustomResponse<UserEntityResponse> response = new CustomResponse<>(CustomResponseCode.USER_SELECTED);
+		response.setResponseBody(user);
 		
-		return new ResponseEntity<CustomResponse<UserEntityResponse>>(userResponse, HttpStatus.OK);
+		return new ResponseEntity<CustomResponse<UserEntityResponse>>(response, HttpStatus.OK);
 	}
 	
 	/**
@@ -87,18 +73,12 @@ public class UserController {
 			@RequestParam(required=false, name="deleted", defaultValue="false") Boolean isDeleted
 			) {
 		List<UserEntityResponse> listResponse;
-		if(username == null && email == null && phoneNumber == null && isDeleted == false)
-		{
-			listResponse = userService.getUsers();
-		}
-		else {
-			listResponse = userService.findUserByParam(username, email, phoneNumber, isDeleted);
-		}
+		listResponse = userService.findUserByParam(username, email, phoneNumber, isDeleted);
 		
-		CustomResponse<List<UserEntityResponse>> userResponse = new CustomResponse<>(CustomResponseCode.USER_SELECTED);
-		userResponse.setResponseBody(listResponse);
+		CustomResponse<List<UserEntityResponse>> response = new CustomResponse<>(CustomResponseCode.USER_SELECTED);
+		response.setResponseBody(listResponse);
 		
-		return new ResponseEntity<CustomResponse<List<UserEntityResponse>>>(userResponse , HttpStatus.OK);
+		return new ResponseEntity<CustomResponse<List<UserEntityResponse>>>(response , HttpStatus.OK);
 	}
 	
 	/**
@@ -108,14 +88,42 @@ public class UserController {
 	public ResponseEntity<CustomResponse<UserEntityResponse>> updateUser(@PathVariable Integer id, 
 			@RequestBody UserEntityRequest request)
 	{
-		CustomResponse<UserEntityResponse> userResponse = new CustomResponse<>();
+		CustomResponse<UserEntityResponse> response = new CustomResponse<>();
 		UserEntityResponse user = userService.updateUser(id, request);
-		userResponse.setResponseBody(user);
-		userResponse.setCustomResponseCode(CustomResponseCode.USER_UPDATED);
+		response.setResponseBody(user);
+		response.setCustomResponseCode(CustomResponseCode.USER_UPDATED);
 		
-		return new ResponseEntity<CustomResponse<UserEntityResponse>>(userResponse, (HttpStatus.OK));
+		return new ResponseEntity<CustomResponse<UserEntityResponse>>(response, (HttpStatus.OK));
 	}
 	
+	/**
+	 * DELETE /users/{id}
+	 * **/
+	@DeleteMapping("/{id}")
+	public ResponseEntity<CustomResponse<UserEntityResponse>> deleteUser(@PathVariable Integer id) {
+		CustomResponse<UserEntityResponse> response = new CustomResponse<>();
+		UserEntityResponse user = userService.deleteUser(id);
+		response.setCustomResponseCode(CustomResponseCode.USER_DELETED);
+		response.setResponseBody(user);
+		
+		return new ResponseEntity<CustomResponse<UserEntityResponse>>(response, HttpStatus.OK);
+	}
 	
+	/**
+	 * DELETE /users/delete/{id}
+	 * Instead of forcing to delete the user, hide the
+	 * user that you want to delete instead of
+	 * forcing to delete it
+	 * **/
+	@DeleteMapping("/delete/{id}")
+	public ResponseEntity<CustomResponse<UserEntityResponse>> safeDeleteUser(@PathVariable Integer id) {
+		CustomResponse<UserEntityResponse> response = new CustomResponse<>();
+		UserEntityResponse user = userService.safeDeleteUser(id);
+		response.setCustomResponseCode(CustomResponseCode.USER_DELETED);
+		response.setResponseBody(user);
+		
+		
+		return new ResponseEntity<CustomResponse<UserEntityResponse>>(response, HttpStatus.OK);
+	}
 	
 }
