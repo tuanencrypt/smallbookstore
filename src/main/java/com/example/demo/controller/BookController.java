@@ -3,6 +3,8 @@ package com.example.demo.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,6 +35,20 @@ public class BookController {
 		CustomResponse<BookEntityResponse> response = new CustomResponse<>();
 		BookEntityResponse bookResponse = bookService.addBook(request);
 		response.setCustomResponseCode(CustomResponseCode.BOOK_CREATED);
+		response.setResponseBody(bookResponse);
+		
+		return new ResponseEntity<CustomResponse<BookEntityResponse>>(response, HttpStatus.OK);
+	}
+	
+	/**
+	 * GET /books/{id}
+	 * **/
+	@GetMapping("/{id}")
+	public ResponseEntity<CustomResponse<BookEntityResponse>> getBook(@PathVariable Integer id)
+	{
+		CustomResponse<BookEntityResponse> response = new CustomResponse<>();
+		BookEntityResponse bookResponse = bookService.getBook(id);
+		response.setCustomResponseCode(CustomResponseCode.BOOK_SELECTED);
 		response.setResponseBody(bookResponse);
 		
 		return new ResponseEntity<CustomResponse<BookEntityResponse>>(response, HttpStatus.OK);
