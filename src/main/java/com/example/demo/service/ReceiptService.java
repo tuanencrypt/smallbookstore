@@ -66,15 +66,18 @@ public class ReceiptService {
 	 * GET /receipts
 	 * Selects all the receipts
 	 * **/
-	// Todo: Rewrite the query to join both the table of UserEntity and ReceiptEntity
-	// in order to get UserEntity presented into ReceiptEntity
 	public List<ReceiptEntityResponse> getReceipts() {
-		List<ReceiptEntity> listReceipt = receiptRepository.findAll();
+		List<ReceiptEntity> listReceipt = receiptRepository.findAllEntitiesWithUserEntity();
 		List<ReceiptEntityResponse> response = new ArrayList<>();
 		
 		listReceipt.forEach(src -> {
 			ReceiptEntityResponse dst = new ReceiptEntityResponse();
-
+			if(src.getUser() != null) {
+				dst.setUserId(src.getUser().getUserId());
+			}
+			else {
+				dst.setUserId(null);
+			}
 			dst.setReceiptId(src.getReceiptId());
 			dst.setPurchaseDate(src.getPurchaseDate());
 			response.add(dst);
