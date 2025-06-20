@@ -1,8 +1,11 @@
 package com.example.demo.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,6 +39,19 @@ public class ReceiptController {
 		response.setResponseBody(receiptResponse);
 		
 		return new ResponseEntity<CustomResponse<ReceiptEntityResponse>>(response, HttpStatus.OK);
+	}
+	
+	/**
+	 * GET /receipts
+	 * **/
+	@GetMapping
+	public ResponseEntity<CustomResponse<List<ReceiptEntityResponse>>> getReceipts() {
+		CustomResponse<List<ReceiptEntityResponse>> response = new CustomResponse<>();
+		List<ReceiptEntityResponse> listResponse = receiptService.getReceipts();
+		response.setCustomResponseCode(CustomResponseCode.RECEIPT_SELECTED);
+		response.setResponseBody(listResponse);
+		
+		return new ResponseEntity<CustomResponse<List<ReceiptEntityResponse>>>(response , HttpStatus.OK);
 	}
 	
 }
